@@ -35,44 +35,57 @@ select{font:600 16px Outfit,sans-serif;padding:10px;border-radius:10px;border:1p
 .meter{font-family:Cinzel,serif;font-size:40px;color:var(--pink)}
 .hide{display:none}
 button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-@media (max-width:600px){body{font-size:16px}main{max-width:none;padding:18px 14px 40px}h1{font-size:34px}h2{font-size:22px}.panel{padding:16px;border-radius:16px;margin-top:16px}#quiz{min-height:72vh;display:flex;flex-direction:column}#q{font-size:22px;line-height:1.25}#quiz .opts{margin-top:auto;padding-top:20px}.opts button{min-height:62px;padding:18px 16px}.go{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:2;min-height:56px;box-shadow:0 8px 24px rgba(0,0,0,.35)}.res svg{width:min(300px,82vw)}.row{gap:6px}select{padding:12px 4px}.vs svg{width:40%}}
+.hide{display:none!important}
+body{min-height:100svh}#bg{opacity:.8}
+.go{min-height:56px;font-size:18px;margin-top:0}
+.screen{min-height:calc(100svh - 48px);display:flex;flex-direction:column}
+#intro .hero{margin:auto 0}.fine{text-align:center;font-size:14px;margin:12px 0 0}
+.top{display:flex;align-items:center;gap:12px}.top .bar{flex:1;height:8px}#prog{width:0}
+.back{width:44px;height:44px;padding:0;text-align:center;font-size:28px;line-height:1;flex:none}
+#cnt{font-size:14px;min-width:42px;text-align:right}
+.qwrap{flex:1;display:flex;align-items:center;padding:12px 2px}
+#q{font-size:clamp(22px,6.2vw,30px);line-height:1.25;margin:0}
+#quiz .opts{margin:0 0 8px;gap:12px}
+.opts button{min-height:68px;padding:16px 18px;font-size:17px;line-height:1.3;background:color-mix(in srgb,var(--panel) 92%,transparent);transition:transform .12s,border-color .12s,background .12s}
+.opts button:active,.opts button.pick{transform:scale(.98);border-color:var(--pink);background:var(--glow)}
+.opts.lock{pointer-events:none}
+#quiz.in .qwrap,#quiz.in .opts{animation:fadeup .28s ease-out}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.seg button{text-align:center;padding:12px 6px;min-height:52px;font-weight:400;font-size:15px}
+.seg button b{font-size:18px;margin-right:4px}
+.seg button.on{background:linear-gradient(90deg,var(--pink),#8a3ffc);color:#fff;border-color:transparent}
+.actions{display:grid;gap:10px;margin-top:22px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+.ghost{text-align:center}#rpct{font-size:14px;margin:0}
+.res svg{width:min(280px,72vw)}.vs svg{width:38%}
+@media(prefers-reduced-motion:reduce){#quiz.in .qwrap,#quiz.in .opts{animation:none}}
+@media(max-width:600px){main{max-width:none;padding:14px 16px 24px}h1{font-size:36px}.panel{padding:18px;border-radius:18px;margin-top:14px}}
 </style>
 </head>
 <body>
 <canvas id="bg" aria-hidden="true"></canvas>
 <main>
-<section id="intro">
-<h1>Piltover or Zaun?<span>Find your Arcane character.</span></h1>
-<p class="mute">Twenty questions, different every time, match your personality type to a character. Then compare with friends and collect your sticker. A fun quiz, not an official MBTI test.</p>
+<section id="intro" class="screen">
+<div class="hero"><h1>Piltover or Zaun?<span>Find your Arcane character.</span></h1>
+<p class="mute">20 quick questions. Get your character sticker, then compare with friends.</p></div>
 <button class="go" id="start">Start the quiz</button>
+<p class="fine mute">A fun quiz, not an official MBTI test.</p>
 </section>
-
-<section id="quiz" class="panel hide">
-<div class="bar"><i id="prog" style="width:0"></i></div>
-<h2 id="q" style="margin-top:18px"></h2>
+<section id="quiz" class="screen hide">
+<div class="top"><button class="back" id="back" aria-label="Previous question">‹</button><div class="bar"><i id="prog"></i></div><span id="cnt" class="mute"></span></div>
+<div class="qwrap"><h2 id="q"></h2></div>
 <div class="opts" id="opts"></div>
 </section>
-
 <section id="result" class="hide">
 <div class="panel res">
 <div id="stk"></div>
 <h2 id="rname"></h2>
-<p class="mute" id="rtype"></p>
+<p class="mute" id="rtype"></p><p class="mute" id="rpct"></p>
 <p id="rblurb"></p>
 <p><strong>Show this screen at the sticker table to claim yours.</strong></p>
 </div>
-<div class="panel">
-<h2>Compare with a friend</h2>
-<p class="mute">Pick your friend’s type to see how you match.</p>
-<div class="row">
-<select id="f0" aria-label="Friend E or I"><option>E</option><option>I</option></select>
-<select id="f1" aria-label="Friend S or N"><option>S</option><option>N</option></select>
-<select id="f2" aria-label="Friend T or F"><option>T</option><option>F</option></select>
-<select id="f3" aria-label="Friend J or P"><option>J</option><option>P</option></select>
-</div>
-<div id="cmp"></div>
-</div>
-<button class="go" id="again">Retake the quiz</button>
+<div class="panel"><h2>Compare with a friend</h2><p class="mute">Tap your friend’s traits.</p><div id="seg"></div><div id="cmp"></div></div>
+<div class="actions"><button class="go" id="share">Share my result</button><button class="ghost" id="again">Retake the quiz</button></div>
 </section>
 </main>
 <script>
@@ -141,20 +154,28 @@ return '<svg viewBox="0 0 200 200" role="img" aria-label="Sticker: '+c[0]+'"><de
 '<circle cx="100" cy="100" r="96" fill="#fff" stroke="#1b1030" stroke-opacity=".2" stroke-width="2"/><circle cx="100" cy="100" r="88" fill="url(#g'+id+')"/><circle cx="100" cy="100" r="76" fill="none" stroke="#fff" stroke-opacity=".6" stroke-dasharray="3 6" stroke-width="2"/>'+
 '<ellipse cx="72" cy="52" rx="46" ry="20" fill="#fff" fill-opacity=".18" transform="rotate(-28 72 52)"/><g transform="translate(56 40) scale(.88)"><path fill-rule="evenodd" d="'+g+'" fill="#fff" fill-opacity=".92"/></g>'+
 '<rect x="38" y="132" width="124" height="34" rx="17" fill="#120a1c"/><text x="100" y="155" text-anchor="middle" font-family="Cinzel,Georgia,serif" font-weight="800" font-size="'+(c[0].length>8?15:19)+'" fill="#fff">'+c[0]+'</text></svg>';}
-function show(s){["intro","quiz","result"].forEach(function(k){$(k).classList.toggle("hide",k!==s)})}
-function ask(){var q=Q[i];$("q").textContent=q[0];$("prog").style.width=(i/Q.length*100)+"%";$("opts").innerHTML="";
-[q[1],q[2]].forEach(function(o){var b=document.createElement("button");b.textContent=o[1];b.onclick=function(){sc[o[0]]=(sc[o[0]]||0)+1;i++;i<Q.length?ask():done()};$("opts").appendChild(b)})}
+var hist=[],fv=["E","S","T","J"],PAIRS=[["E","Outgoing","I","Reserved"],["S","Practical","N","Imaginative"],["T","Logical","F","Caring"],["J","Planned","P","Flexible"]];
+function show(k2){["intro","quiz","result"].forEach(function(k){$(k).classList.toggle("hide",k!==k2)});window.scrollTo(0,0)}
+function ask(){var q=Q[i],w=$("quiz");$("cnt").textContent=(i+1)+"/"+Q.length;$("prog").style.width=(i/Q.length*100)+"%";$("back").style.visibility=i?"visible":"hidden";
+w.classList.remove("in");void w.offsetWidth;w.classList.add("in");$("q").textContent=q[0];$("opts").innerHTML="";
+[q[1],q[2]].forEach(function(o){var b=document.createElement("button");b.textContent=o[1];b.onclick=function(){b.classList.add("pick");$("opts").classList.add("lock");setTimeout(function(){$("opts").classList.remove("lock");sc[o[0]]=(sc[o[0]]||0)+1;hist.push(o[0]);i++;i<Q.length?ask():done()},180)};$("opts").appendChild(b)})}
 function typ(){return ["E","S","T","J"].map(function(a,k){var b=["I","N","F","P"][k];return (sc[a]||0)>=(sc[b]||0)?a:b}).join("")}
-function render(t){var c=C[t];$("stk").innerHTML=sticker(t,"main");$("rname").textContent="You’re "+c[0];var ex="";if(Object.keys(sc).length){ex=" · "+[["E","I"],["S","N"],["T","F"],["J","P"]].map(function(p){var a=sc[p[0]]||0,b=sc[p[1]]||0;return Math.round(Math.max(a,b)/(a+b)*100)+"% "+(a>=b?p[0]:p[1])}).join(", ")}$("rtype").textContent="Personality type: "+t+ex;$("rblurb").textContent=c[3];
-window.myType=t;cmp();show("result");window.scrollTo(0,0)}
+function seg(){var h="";PAIRS.forEach(function(p,k){h+='<div class="seg">'+[0,2].map(function(n){return '<button data-k="'+k+'" data-v="'+p[n]+'" class="'+(fv[k]===p[n]?"on":"")+'"><b>'+p[n]+'</b>'+p[n+1]+'</button>'}).join("")+'</div>'});$("seg").innerHTML=h;
+Array.prototype.forEach.call($("seg").querySelectorAll("button"),function(b){b.onclick=function(){fv[+b.dataset.k]=b.dataset.v;seg();cmp()}})}
+function render(t){var c=C[t],ex="";$("stk").innerHTML=sticker(t,"main");$("rname").textContent="You’re "+c[0];$("rtype").textContent="Personality type: "+t;
+if(Object.keys(sc).length)ex=PAIRS.map(function(p){var a=sc[p[0]]||0,b=sc[p[2]]||0;return Math.round(Math.max(a,b)/(a+b)*100)+"% "+(a>=b?p[0]:p[2])}).join(" · ");$("rpct").textContent=ex;
+$("rblurb").textContent=c[3];window.myType=t;seg();cmp();show("result")}
 function done(){var t=typ();try{location.hash=t}catch(e){}render(t)}
-function cmp(){var f=[0,1,2,3].map(function(k){return $("f"+k).value}).join(""),m=window.myType,n=0;
-for(var k=0;k<4;k++)if(f[k]===m[k])n++;
+function cmp(){var f=fv.join(""),m=window.myType,n=0;for(var k=0;k<4;k++)if(f[k]===m[k])n++;
 var L=["Opposites. Expect sparks.","A little in common.","Solid allies.","Great teammates.","Mirror image."][n];
 $("cmp").innerHTML='<div class="vs">'+sticker(m,"a")+'<span class="meter">'+(n*25)+'%</span>'+sticker(f,"b")+'</div><p style="text-align:center"><strong>'+C[m][0]+' + '+C[f][0]+'</strong><br><span class="mute">'+n+' of 4 letters shared. '+L+'</span></p>'}
-[0,1,2,3].forEach(function(k){$("f"+k).onchange=cmp});
-$("start").onclick=function(){i=0;sc={};build();show("quiz");ask()};
-$("again").onclick=function(){try{history.replaceState(null,"",location.pathname)}catch(e){}i=0;sc={};build();show("quiz");ask();window.scrollTo(0,0)};
+function begin(){i=0;sc={};hist=[];build();show("quiz");ask()}
+$("start").onclick=begin;
+$("again").onclick=function(){try{history.replaceState(null,"",location.pathname)}catch(e){}begin()};
+$("back").onclick=function(){if(!i)return;i--;var l=hist.pop();sc[l]--;ask()};
+$("share").onclick=function(){var u=location.href.split("#")[0]+"#"+window.myType,tx="I’m "+C[window.myType][0]+" in the Arcane quiz. Which character are you?";
+try{if(navigator.share){navigator.share({title:"Arcane quiz",text:tx,url:u}).catch(function(){});return}}catch(e){}
+try{navigator.clipboard.writeText(tx+" "+u).then(function(){$("share").textContent="Link copied"})}catch(e){$("share").textContent="Copy the page link to share"}};
 var h=(location.hash||"").slice(1).toUpperCase();if(C[h])render(h);
 </script>
 <script>
