@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Which Arcane character are you?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3eef7;--panel:#fff;--ink:#241636;--mute:#6b5a80;--pink:#d6247f;--teal:#0b8f8a;--line:#d9cfe6;--glow:rgba(214,36,127,.18);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#120a1c;--panel:#1d1230;--ink:#f1e8fb;--mute:#a995c2;--pink:#ff4fa3;--teal:#35e0d0;--line:#3a2a55;--glow:rgba(255,79,163,.22)}}
+:root[data-theme="dark"]{--bg:#120a1c;--panel:#1d1230;--ink:#f1e8fb;--mute:#a995c2;--pink:#ff4fa3;--teal:#35e0d0;--line:#3a2a55;--glow:rgba(255,79,163,.22)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 Outfit,system-ui,sans-serif;min-height:100vh;
+background-image:radial-gradient(circle at 12% 0,rgba(255,200,87,.16),transparent 42%),radial-gradient(circle at 88% 100%,rgba(53,224,208,.18),transparent 45%),radial-gradient(circle at 20% 100%,rgba(255,79,163,.16),transparent 40%);position:relative}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+main{max-width:640px;margin:0 auto;padding:28px 18px 60px;position:relative;z-index:1}
+h1,h2{font-family:Cinzel,Georgia,serif;margin:0;letter-spacing:.02em}
+h1{font-size:clamp(34px,8vw,54px);line-height:1.05;font-weight:800}
+h1 span{display:block;background:linear-gradient(90deg,var(--pink),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:26px}
+p{margin:.6em 0}.mute{color:var(--mute)}
+.panel{background:color-mix(in srgb,var(--panel) 88%,transparent);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:18px;padding:22px;margin-top:22px}
+button{font:600 17px Outfit,sans-serif;cursor:pointer;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:14px 18px;text-align:left;width:100%}
+button:hover{border-color:var(--pink)}button:focus-visible,select:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.go{background:linear-gradient(90deg,var(--pink),#8a3ffc);color:#fff;border:0;text-align:center;margin-top:14px}
+.opts{display:grid;gap:10px;margin-top:16px}
+.bar{height:6px;background:var(--line);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pink),var(--teal));transition:width .3s}
+.res{text-align:center}.res svg{width:min(260px,70vw);height:auto;filter:drop-shadow(0 8px 18px var(--glow));animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.4) rotate(-12deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){.res svg{animation:none}}
+.row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+select{font:600 16px Outfit,sans-serif;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.vs{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px}.vs svg{width:38%;max-width:170px}
+.meter{font-family:Cinzel,serif;font-size:40px;color:var(--pink)}
+.hide{display:none}
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+@media (max-width:600px){body{font-size:16px}main{max-width:none;padding:18px 14px 40px}h1{font-size:34px}h2{font-size:22px}.panel{padding:16px;border-radius:16px;margin-top:16px}#quiz{min-height:72vh;display:flex;flex-direction:column}#q{font-size:22px;line-height:1.25}#quiz .opts{margin-top:auto;padding-top:20px}.opts button{min-height:62px;padding:18px 16px}.go{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:2;min-height:56px;box-shadow:0 8px 24px rgba(0,0,0,.35)}.res svg{width:min(300px,82vw)}.row{gap:6px}select{padding:12px 4px}.vs svg{width:40%}}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<main>
+<section id="intro">
+<h1>Piltover or Zaun?<span>Find your Arcane character.</span></h1>
+<p class="mute">Twenty questions, different every time, match your personality type to a character. Then compare with friends and collect your sticker. A fun quiz, not an official MBTI test.</p>
+<button class="go" id="start">Start the quiz</button>
+</section>
+
+<section id="quiz" class="panel hide">
+<div class="bar"><i id="prog" style="width:0"></i></div>
+<h2 id="q" style="margin-top:18px"></h2>
+<div class="opts" id="opts"></div>
+</section>
+
+<section id="result" class="hide">
+<div class="panel res">
+<div id="stk"></div>
+<h2 id="rname"></h2>
+<p class="mute" id="rtype"></p>
+<p id="rblurb"></p>
+<p><strong>Show this screen at the sticker table to claim yours.</strong></p>
+</div>
+<div class="panel">
+<h2>Compare with a friend</h2>
+<p class="mute">Pick your friend’s type to see how you match.</p>
+<div class="row">
+<select id="f0" aria-label="Friend E or I"><option>E</option><option>I</option></select>
+<select id="f1" aria-label="Friend S or N"><option>S</option><option>N</option></select>
+<select id="f2" aria-label="Friend T or F"><option>T</option><option>F</option></select>
+<select id="f3" aria-label="Friend J or P"><option>J</option><option>P</option></select>
+</div>
+<div id="cmp"></div>
+</div>
+<button class="go" id="again">Retake the quiz</button>
+</section>
+</main>
+<script>
+var G=["M55 10 L25 55 H46 L40 90 L75 40 H54 Z","M50 12 L82 31 V69 L50 88 L18 69 V31 Z","M50 10 L60 38 L90 40 L66 58 L74 88 L50 71 L26 88 L34 58 L10 40 L40 38 Z","M50 8 L88 50 L50 92 L12 50 Z","M62 14 A38 38 0 1 0 62 86 A30 30 0 1 1 62 14 Z","M50 10 L84 22 V50 C84 72 66 86 50 92 C34 86 16 72 16 50 V22 Z","M50 8 C58 30 82 40 78 66 C75 84 62 92 50 92 C38 92 25 84 22 66 C20 52 30 46 34 34 C42 40 44 46 46 52 C52 40 48 24 50 8 Z","M50 10 L90 84 H10 Z"];
+var C={
+INTJ:["Viktor","#3fd1c7","#1b5f8f","The quiet visionary who’s sure the future can be engineered."],
+INTP:["Heimerdinger","#7aa7ff","#4b3fa8","A curious inventor who’d rather understand the system than rule it."],
+ENTJ:["Silco","#ff5a7a","#6b1d4a","A strategist who builds an empire from sheer will."],
+ENTP:["Jayce","#ffb347","#d6247f","A brilliant debater who loves a bold idea and a good argument."],
+INFJ:["Mel","#ffd36b","#a8561f","A deep thinker who sees the long game and the people in it."],
+INFP:["Jinx","#ff4fa3","#2b8cff","Wildly creative and deeply feeling, with a heart that runs on imagination."],
+ENFJ:["Vander","#ff9a56","#8f2f2f","The protector everyone trusts to hold the family together."],
+ENFP:["Ekko","#35e0d0","#8a3ffc","Charming, restless and always sure there’s a way to rewind and try again."],
+ISTJ:["Caitlyn","#6fa8ff","#2a3f8f","Dutiful and precise, with a steady sense of what justice means."],
+ISFJ:["Benzo","#c9a0ff","#5a3f8f","Loyal and gentle, there with a kind word when it counts."],
+ESTJ:["Ambessa","#e0b04a","#5a1d1d","Commanding and disciplined, built for leadership and conquest."],
+ESFJ:["Isha","#ff8fc7","#7a3fa8","Warm and tight with her crew, she keeps everyone looking out for each other."],
+ESFP:["Claggor","#7be07b","#2d6b4a","Big-hearted, loud and fun, the life of every room."],
+ISFP:["Mylo","#ff7a59","#8f3f6b","Easygoing and observant, with style all his own."],
+ISTP:["Sevika","#b0b8c8","#4a2f6b","Cool under pressure and handy with her hands, always ready to act."],
+ESTP:["Vi","#ff5a5a","#d6247f","Bold, direct and quick to throw the first punch for her people."]};
+var T=Object.keys(C),Q=[];
+var B={
+EI:[
+["Friday night. Your crew is heading to a loud party that looks straight out of Piltover.",["E","I’m already on my way"],["I","I’ll show up late and leave early"]],
+["Free Sunday. Your perfect day is…",["E","Dinner for ten at your place, Last Drop style"],["I","A quiet day tinkering on your own project"]],
+["A new group joins your class. You…",["E","Introduce yourself to everyone"],["I","Wait and see who you click with"]],
+["After a draining week you recharge by…",["E","Going out and soaking up the energy"],["I","Headphones on, door closed, workshop mode"]],
+["In the group chat you’re usually…",["E","The one who keeps it buzzing"],["I","The one who reads it all and replies later"]],
+["A friend calls out of the blue, like Vi turning up at your door. You…",["E","Pick up, thrilled"],["I","Let it ring and text back"]],
+["At a Piltover gala you’d rather…",["E","Talk to lots of people"],["I","Have a few deep conversations"]],
+["Your best ideas come when you’re…",["E","Talking them out loud"],["I","Thinking alone first"]]],
+SN:[
+["A mysterious glowing gadget arrives in the mail. First move?",["S","Read the instructions and test it safely"],["N","Wonder what strange thing it could become"]],
+["Learning a new skill, you prefer…",["S","Proven steps and clear examples"],["N","Experimenting until you spot the pattern"]],
+["Your laptop dies before a deadline. You…",["S","Follow a repair guide step by step"],["N","Hack together a fix like a Zaun inventor"]],
+["You’re drawn to stories that are…",["S","Grounded, with believable details"],["N","Big and symbolic, full of what-ifs"]],
+["Planning a trip, you think about…",["S","Tickets, times and concrete details"],["N","The mood and possibilities of the place"]],
+["A friend pitches a bold hextech-style startup. You first ask…",["S","Does it work today?"],["N","What could this become in ten years?"]],
+["You describe your day by…",["S","What actually happened, in order"],["N","The big picture and what it meant"]],
+["Like a Zaun inventor, you trust more…",["S","Experience and facts"],["N","Intuition and patterns"]]],
+TF:[
+["A teammate’s mistake cost your group the win. You…",["T","Break down what went wrong so it won’t repeat"],["F","Check how they’re holding up first"]],
+["Choosing a plan for a group project, you weigh…",["T","What’s most efficient"],["F","What keeps everyone comfortable"]],
+["A friend asks if their risky business idea is good. You…",["T","Give honest numbers"],["F","Encourage them and hint at the risks"]],
+["Your friends would call you…",["T","Fair and direct, like Caitlyn"],["F","Kind and understanding, like Vander"]],
+["Two friends are fighting. You…",["T","Find the logical fix"],["F","Listen to both sides"]],
+["A tough decision helps many people but hurts one close friend. You…",["T","Make the call"],["F","Search for another way, even if it’s slower"]],
+["In an argument you value…",["T","Being right"],["F","Keeping the peace"]],
+["Praise from the Council matters most when it’s about your…",["T","Competence"],["F","Kindness"]]],
+JP:[
+["Big presentation on Friday. You…",["J","Prepare early, everything in order"],["P","Do your best work the night before"]],
+["Your desk looks like…",["J","Labeled drawers, tidy as Piltover"],["P","Organized chaos only you understand, very Zaun"]],
+["Weekend plans are…",["J","Scheduled ahead"],["P","Decided that morning"]],
+["A plan changes at the last minute. You…",["J","Feel thrown off"],["P","Enjoy the surprise"]],
+["Group trip: you…",["J","Build the itinerary"],["P","Show up and see what happens"]],
+["Your to-do list is…",["J","Detailed and checked off"],["P","Mostly in your head"]],
+["You prefer decisions to be…",["J","Made and settled"],["P","Kept open as long as possible"]],
+["Starting a big invention, you…",["J","Plan it fully first"],["P","Dive in and adjust as you go"]]]};
+function shuf(a){a=a.slice();for(var n=a.length-1;n>0;n--){var j=Math.floor(Math.random()*(n+1)),t=a[n];a[n]=a[j];a[j]=t}return a}
+function build(){Q=[];Object.keys(B).forEach(function(k){shuf(B[k]).slice(0,5).forEach(function(q){Q.push(q)})});Q=shuf(Q).map(function(q){return Math.random()<.5?[q[0],q[2],q[1]]:q})}
+var i=0,sc={},$=function(x){return document.getElementById(x)};
+var G2={INTJ:"M50 10 L82 30 V70 L50 90 L18 70 V30 Z M50 30 L66 40 V60 L50 70 L34 60 V40 Z",INTP:"M50 12 A38 38 0 1 0 50.1 12 Z M50 32 A18 18 0 1 1 49.9 32 Z",ENTJ:"M40 10 H60 V30 L78 80 Q80 90 70 90 H30 Q20 90 22 80 L40 30 Z M34 62 H66 L72 80 H28 Z",ENTP:"M20 20 H80 V42 H56 V90 H44 V42 H20 Z",INFJ:"M5 50 Q50 8 95 50 Q50 92 5 50 Z M50 34 A16 16 0 1 0 50.1 34 Z",INFP:G[0],ENFJ:G[5],ENFP:"M25 10 H75 V22 Q75 42 55 50 Q75 58 75 78 V90 H25 V78 Q25 58 45 50 Q25 42 25 22 Z",ISTJ:"M50 8 A42 42 0 1 0 50.1 8 Z M50 22 A28 28 0 1 1 49.9 22 Z M47 30 H53 V70 H47 Z M30 47 H70 V53 H30 Z",ISFJ:"M50 88 C10 56 8 28 28 20 C40 16 48 24 50 30 C52 24 60 16 72 20 C92 28 90 56 50 88 Z",ESTJ:"M50 5 L60 20 V62 H72 V72 H58 V92 H42 V72 H28 V62 H40 V20 Z",ESFJ:G[2],ESFP:G[3],ISFP:G[4],ISTP:"M30 10 H70 V40 H90 V70 H70 V90 H30 V70 H10 V40 H30 Z",ESTP:G[6]};
+function sticker(t,id){var c=C[t],g=G2[t];
+return '<svg viewBox="0 0 200 200" role="img" aria-label="Sticker: '+c[0]+'"><defs><linearGradient id="g'+id+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+c[1]+'"/><stop offset="1" stop-color="'+c[2]+'"/></linearGradient></defs>'+
+'<circle cx="100" cy="100" r="96" fill="#fff" stroke="#1b1030" stroke-opacity=".2" stroke-width="2"/><circle cx="100" cy="100" r="88" fill="url(#g'+id+')"/><circle cx="100" cy="100" r="76" fill="none" stroke="#fff" stroke-opacity=".6" stroke-dasharray="3 6" stroke-width="2"/>'+
+'<ellipse cx="72" cy="52" rx="46" ry="20" fill="#fff" fill-opacity=".18" transform="rotate(-28 72 52)"/><g transform="translate(56 40) scale(.88)"><path fill-rule="evenodd" d="'+g+'" fill="#fff" fill-opacity=".92"/></g>'+
+'<rect x="38" y="132" width="124" height="34" rx="17" fill="#120a1c"/><text x="100" y="155" text-anchor="middle" font-family="Cinzel,Georgia,serif" font-weight="800" font-size="'+(c[0].length>8?15:19)+'" fill="#fff">'+c[0]+'</text></svg>';}
+function show(s){["intro","quiz","result"].forEach(function(k){$(k).classList.toggle("hide",k!==s)})}
+function ask(){var q=Q[i];$("q").textContent=q[0];$("prog").style.width=(i/Q.length*100)+"%";$("opts").innerHTML="";
+[q[1],q[2]].forEach(function(o){var b=document.createElement("button");b.textContent=o[1];b.onclick=function(){sc[o[0]]=(sc[o[0]]||0)+1;i++;i<Q.length?ask():done()};$("opts").appendChild(b)})}
+function typ(){return ["E","S","T","J"].map(function(a,k){var b=["I","N","F","P"][k];return (sc[a]||0)>=(sc[b]||0)?a:b}).join("")}
+function render(t){var c=C[t];$("stk").innerHTML=sticker(t,"main");$("rname").textContent="You’re "+c[0];var ex="";if(Object.keys(sc).length){ex=" · "+[["E","I"],["S","N"],["T","F"],["J","P"]].map(function(p){var a=sc[p[0]]||0,b=sc[p[1]]||0;return Math.round(Math.max(a,b)/(a+b)*100)+"% "+(a>=b?p[0]:p[1])}).join(", ")}$("rtype").textContent="Personality type: "+t+ex;$("rblurb").textContent=c[3];
+window.myType=t;cmp();show("result");window.scrollTo(0,0)}
+function done(){var t=typ();try{location.hash=t}catch(e){}render(t)}
+function cmp(){var f=[0,1,2,3].map(function(k){return $("f"+k).value}).join(""),m=window.myType,n=0;
+for(var k=0;k<4;k++)if(f[k]===m[k])n++;
+var L=["Opposites. Expect sparks.","A little in common.","Solid allies.","Great teammates.","Mirror image."][n];
+$("cmp").innerHTML='<div class="vs">'+sticker(m,"a")+'<span class="meter">'+(n*25)+'%</span>'+sticker(f,"b")+'</div><p style="text-align:center"><strong>'+C[m][0]+' + '+C[f][0]+'</strong><br><span class="mute">'+n+' of 4 letters shared. '+L+'</span></p>'}
+[0,1,2,3].forEach(function(k){$("f"+k).onchange=cmp});
+$("start").onclick=function(){i=0;sc={};build();show("quiz");ask()};
+$("again").onclick=function(){try{history.replaceState(null,"",location.pathname)}catch(e){}i=0;sc={};build();show("quiz");ask();window.scrollTo(0,0)};
+var h=(location.hash||"").slice(1).toUpperCase();if(C[h])render(h);
+</script>
+<script>
+(function(){
+var cv=document.getElementById("bg"),x=cv.getContext("2d"),W,H,P=[],
+R=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function dk(){var t=document.documentElement.getAttribute("data-theme");return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
+for(var k=0;k<(innerWidth<600?40:90);k++)P.push({x:Math.random(),y:Math.random(),s:.6+Math.random()*2.2,v:.00012+Math.random()*.0005,c:Math.random()<.55?"53,224,208":"255,79,163",p:Math.random()*6});
+function cog(cx,cy,r,z,a,col){x.save();x.translate(cx,cy);x.rotate(a);x.beginPath();for(var i=0;i<z*4;i++){var g=i*Math.PI*2/(z*4),q=i%4<2?r:r*.84;x.lineTo(Math.cos(g)*q,Math.sin(g)*q)}x.closePath();x.moveTo(r*.4,0);x.arc(0,0,r*.4,0,7,true);x.fillStyle=col;x.fill("evenodd");x.restore()}
+function hex(cx,cy,r,a){x.beginPath();for(var i=0;i<6;i++){var g=a+i*Math.PI/3;x.lineTo(cx+Math.cos(g)*r,cy+Math.sin(g)*r)}x.closePath();x.stroke()}
+function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight;if(R)fr(0)}
+function fr(tm){var d=dk(),a=tm*.001,m=Math.min(W,H),g,i,h;x.clearRect(0,0,W,H);
+g=x.createRadialGradient(W*.85,H*.05,0,W*.85,H*.05,W*.7);g.addColorStop(0,d?"rgba(255,200,87,.24)":"rgba(255,170,40,.22)");g.addColorStop(1,"rgba(255,200,87,0)");x.fillStyle=g;x.fillRect(0,0,W,H);
+g=x.createRadialGradient(W*.1,H*1.02,0,W*.1,H*1.02,W*.85);g.addColorStop(0,d?"rgba(53,224,208,.3)":"rgba(11,143,138,.24)");g.addColorStop(.6,d?"rgba(255,79,163,.13)":"rgba(214,36,127,.1)");g.addColorStop(1,"rgba(0,0,0,0)");x.fillStyle=g;x.fillRect(0,0,W,H);
+x.lineWidth=2;for(i=0;i<4;i++){x.strokeStyle=d?"rgba(53,224,208,"+(.18-i*.035)+")":"rgba(11,143,138,"+(.22-i*.045)+")";hex(W*.5,H*.42,m*(.3+i*.12),a*(i%2?-.12:.1)+i)}
+var gc=d?"rgba(255,200,87,.17)":"rgba(190,130,20,.2)";cog(W*.92,H*.1,m*.22,18,a*.08,gc);cog(W*.72,H*.03,m*.12,12,-a*.14+.2,gc);cog(W*.99,H*.36,m*.1,10,-a*.14,gc);
+x.fillStyle=d?"rgba(255,200,87,.2)":"rgba(160,110,20,.24)";
+for(i=W*.5;i<W;i+=22){h=H*(.14+.2*Math.abs(Math.sin(i*.037)+Math.sin(i*.011)*.8));x.fillRect(i,H-h,16,h);if(Math.sin(i*1.7)>.55){x.beginPath();x.moveTo(i,H-h);x.lineTo(i+8,H-h-H*.1);x.lineTo(i+16,H-h);x.fill()}}
+x.fillStyle=d?"rgba(8,3,20,.7)":"rgba(40,20,70,.28)";
+for(i=0;i<W*.6;i+=30){h=H*(.06+.1*Math.abs(Math.sin(i*.05)*Math.cos(i*.021)));x.fillRect(i,H-h,26,h);
+for(var w=0;w<3;w++){var on=Math.sin(a*2+i*.7+w*2)>.2;if(on){x.fillStyle=(i/30+w)%2?"rgba(53,224,208,.8)":"rgba(255,79,163,.8)";x.fillRect(i+5+w*7,H-h+8,4,5)}}
+x.fillStyle=d?"rgba(8,3,20,.7)":"rgba(40,20,70,.28)"}
+x.strokeStyle="rgba(255,79,163,.5)";x.lineWidth=3;x.beginPath();x.moveTo(0,H-H*.045);x.quadraticCurveTo(W*.2,H-H*.1+Math.sin(a)*6,W*.45,H-H*.04);x.stroke();
+x.globalCompositeOperation=d?"lighter":"source-over";
+for(i=0;i<P.length;i++){var p=P[i],yy=((p.y-tm*p.v)%1+1)%1,px=p.x*W+Math.sin(a+p.p)*22,al=(.25+.45*Math.abs(Math.sin(a*.8+p.p)))*(d?1:.8);x.fillStyle="rgba("+p.c+","+al+")";x.beginPath();x.arc(px,yy*H,p.s,0,7);x.fill()}
+x.globalCompositeOperation="source-over"}
+function lp(t){fr(t);requestAnimationFrame(lp)}
+addEventListener("resize",rs);rs();if(!R)requestAnimationFrame(lp);
+})();
+</script>
+</body>
+</html>
